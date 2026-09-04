@@ -1,1 +1,107 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0d12"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>PromptDeck</title><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css"></head><body><div id="app"><header><div><small>120 команд</small><h1>PromptDeck</h1></div><button id="install" class="icon hidden">＋</button></header><main><section id="home" class="screen active"><div class="search"><input id="q" type="search" placeholder="Найти команду"><button id="clear" class="hidden">×</button></div><div id="cats" class="chips"></div><div id="list" class="list"></div></section><section id="fav" class="screen"><h2>Избранное</h2><div id="favList" class="list"></div><div id="favEmpty" class="empty hidden">Здесь будут избранные команды.</div></section><section id="recent" class="screen"><div class="row"><h2>Недавние</h2><button id="clearRecent" class="text">Очистить</button></div><div id="recentList" class="list"></div><div id="recentEmpty" class="empty hidden">История пока пуста.</div></section><section id="settings" class="screen"><h2>Настройки</h2><div class="settings"><label><span><b>Сохранять лицо</b><em>для портретов и фото</em></span><input id="face" type="checkbox" checked></label><label><span><b>Без лишнего текста</b><em>не добавлять неподтвержденные надписи</em></span><input id="text" type="checkbox" checked></label><label><span><b>Максимум реализма</b><em>для фото-команд</em></span><input id="real" type="checkbox"></label></div></section></main><nav><button data-screen="home" class="on">⌘<span>Команды</span></button><button data-screen="fav">★<span>Избранное</span></button><button data-screen="recent">◷<span>Недавние</span></button><button data-screen="settings">⚙<span>Настройки</span></button></nav></div><div id="shade" class="shade hidden"></div><aside id="sheet"><i></i><div class="sheetTop"><div><small id="sheetCat"></small><h2 id="sheetCmd"></h2></div><button id="close" class="icon">×</button></div><p id="sheetTitle"></p><div id="rule" class="rule"></div><label class="lab">Формат</label><div id="ratios" class="chips"><button class="on" data-v="">Исходный</button><button data-v="1:1">1:1</button><button data-v="4:5">4:5</button><button data-v="9:16">9:16</button><button data-v="16:9">16:9</button></div><div id="variantsBox" class="hidden"><label class="lab">Варианты</label><div id="variants" class="chips"><button class="on" data-v="4">4</button><button data-v="6">6</button><button data-v="1">1</button></div></div><label class="lab">Подача</label><div id="looks" class="chips"><button class="on" data-v="">По команде</button><button data-v="максимально реалистично">Реализм</button><button data-v="кинематографично">Кино</button><button data-v="студийная подача">Студия</button></div><details><summary>Дополнительно</summary><div id="extra" class="toggles"><button class="on" data-v="не менять одежду">Одежда</button><button class="on" data-v="сохранить естественную текстуру кожи">Кожа</button><button data-v="не менять фон">Фон</button><button data-v="не менять композицию кадра">Композиция</button><button data-v="максимально консервативное редактирование">Минимум изменений</button></div><textarea id="note" placeholder="Свое уточнение"></textarea></details><label class="lab">Готовый промт</label><textarea id="prompt" readonly></textarea><div class="actions"><button id="copy" class="primary">Копировать</button><button id="share">Поделиться</button><button id="star">☆</button></div></aside><div id="toast" class="toast">Скопировано</div><script src="data/product_scene.js"></script><script src="data/product_info.js"></script><script src="data/portrait.js"></script><script src="data/people_photo.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PromptDeck">
+<title>PromptDeck</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+<header>
+  <div><small>PromptDeck 0.2</small><h1>Что сделать с изображением?</h1></div>
+  <button id="install" class="icon hidden" aria-label="Установить">＋</button>
+</header>
+<main>
+<section id="home" class="screen active">
+  <div class="photoBox" id="photoBox">
+    <input id="photoInput" type="file" accept="image/*" hidden>
+    <button id="pickPhoto" class="photoPick">
+      <span class="photoIcon">＋</span>
+      <span><b>Добавить фото</b><small>Останется только на этом устройстве</small></span>
+    </button>
+    <div id="photoPreview" class="photoPreview hidden">
+      <img id="photoImg" alt="Предпросмотр">
+      <div><b id="photoName"></b><small id="photoMeta"></small></div>
+      <button id="removePhoto" class="icon" aria-label="Удалить фото">×</button>
+    </div>
+  </div>
+
+  <h2 class="sectionTitle">Быстрые действия</h2>
+  <div id="quick" class="quickGrid"></div>
+
+  <div class="searchBlock">
+    <div class="search"><input id="q" type="search" placeholder="Найти среди 120 команд"><button id="clear" class="hidden">×</button></div>
+    <div id="cats" class="chips"></div>
+  </div>
+  <div id="list" class="list"></div>
+</section>
+
+<section id="fav" class="screen"><h2>Избранное</h2><div id="favList" class="list"></div><div id="favEmpty" class="empty hidden">Здесь будут избранные команды.</div></section>
+<section id="recent" class="screen"><div class="row"><h2>Недавние</h2><button id="clearRecent" class="text">Очистить</button></div><div id="recentList" class="list"></div><div id="recentEmpty" class="empty hidden">История пока пуста.</div></section>
+<section id="settings" class="screen">
+  <h2>Настройки</h2>
+  <div class="settings">
+    <label><span><b>Сохранять лицо</b><em>для портретов и фото</em></span><input id="face" type="checkbox" checked></label>
+    <label><span><b>Без лишнего текста</b><em>не добавлять неподтвержденные надписи</em></span><input id="text" type="checkbox" checked></label>
+    <label><span><b>Максимум реализма</b><em>для фото-команд</em></span><input id="real" type="checkbox"></label>
+    <label><span><b>Только нужная трансформация</b><em>не менять остальное без запроса</em></span><input id="strict" type="checkbox" checked></label>
+  </div>
+  <div class="privacyNote"><b>Фото не загружается на сервер PromptDeck.</b><br>Оно хранится только в памяти текущей вкладки и передаётся наружу только когда ты нажимаешь «Поделиться».</div>
+</section>
+</main>
+
+<nav>
+<button data-screen="home" class="on">⌘<span>Команды</span></button>
+<button data-screen="fav">★<span>Избранное</span></button>
+<button data-screen="recent">◷<span>Недавние</span></button>
+<button data-screen="settings">⚙<span>Настройки</span></button>
+</nav>
+</div>
+
+<div id="shade" class="shade hidden"></div>
+<aside id="sheet">
+  <i></i>
+  <div class="sheetTop"><div><small id="sheetCat"></small><h2 id="sheetCmd"></h2></div><button id="close" class="icon">×</button></div>
+  <p id="sheetTitle"></p>
+  <div id="rule" class="rule"></div>
+  <div id="photoState" class="photoState"></div>
+
+  <label class="lab">Формат</label>
+  <div id="ratios" class="chips"><button class="on" data-v="">Исходный</button><button data-v="1:1">1:1</button><button data-v="4:5">4:5</button><button data-v="9:16">9:16</button><button data-v="16:9">16:9</button></div>
+
+  <div id="variantsBox" class="hidden"><label class="lab">Варианты</label><div id="variants" class="chips"><button class="on" data-v="4">4</button><button data-v="6">6</button><button data-v="1">1</button></div></div>
+
+  <label class="lab">Подача</label>
+  <div id="looks" class="chips"><button class="on" data-v="">По команде</button><button data-v="максимально реалистично">Реализм</button><button data-v="кинематографично">Кино</button><button data-v="студийная подача">Студия</button></div>
+
+  <details><summary>Дополнительные ограничения</summary>
+    <div id="extra" class="toggles">
+      <button class="on" data-v="не менять одежду">Одежда</button>
+      <button class="on" data-v="сохранить естественную текстуру кожи">Кожа</button>
+      <button data-v="не менять фон">Фон</button>
+      <button data-v="не менять композицию кадра">Композиция</button>
+      <button data-v="максимально консервативное редактирование">Минимум изменений</button>
+    </div>
+    <textarea id="note" placeholder="Свое уточнение: фон, настроение, текст, цвет, детали..."></textarea>
+  </details>
+
+  <label class="lab">Самодостаточный промт</label>
+  <textarea id="prompt" readonly></textarea>
+  <div class="actions"><button id="copy" class="primary">Копировать</button><button id="share">Поделиться</button><button id="star">☆</button></div>
+  <p class="shareHint" id="shareHint">Если фото добавлено, PromptDeck попробует передать вместе и фото, и промт через системное меню iPhone.</p>
+</aside>
+<div id="toast" class="toast">Скопировано</div>
+
+<script src="data/product_scene.js"></script>
+<script src="data/product_info.js"></script>
+<script src="data/portrait.js"></script>
+<script src="data/people_photo.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
