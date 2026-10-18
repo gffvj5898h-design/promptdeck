@@ -1,5 +1,5 @@
-const CACHE='promptdeck-v030';
-const ASSETS=['./','./?v=030','index.html','styles.css?v=030','app.js?v=030','manifest.webmanifest','data/product_scene.js?v=030','data/product_info.js?v=030','data/portrait.js?v=030','data/people_photo.js?v=030','icons/icon-192.png','icons/icon-512.png'];
+const CACHE='promptdeck-v031';
+const ASSETS=['./','./?v=031','index.html','styles.css?v=031','app.js?v=031','manifest.webmanifest','data/product_scene.js?v=031','data/product_info.js?v=031','data/portrait.js?v=031','data/people_photo.js?v=031','icons/icon-192.png','icons/icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('promptdeck-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;event.respondWith((async()=>{const cache=await caches.open(CACHE);try{const response=await fetch(event.request);if(response.ok)await cache.put(event.request,response.clone());return response}catch(error){const cached=await cache.match(event.request);if(cached)return cached;if(event.request.mode==='navigate'){const fallback=await cache.match('./');if(fallback)return fallback}return Response.error()}})())});

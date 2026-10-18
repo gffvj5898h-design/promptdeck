@@ -2,7 +2,7 @@
   "id": "./",
   "name": "PromptDeck — Библиотека промтов",
   "short_name": "PromptDeck",
-  "start_url": "./?v=030",
+  "start_url": "./?v=031",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f6f5f1",
