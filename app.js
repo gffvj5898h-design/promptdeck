@@ -56,7 +56,24 @@ function setPhoto(file){if(file&&file.type&&!file.type.startsWith('image/')){toa
 $('pickPhoto').onclick=()=>$('photoInput').click();$('photoInput').onchange=e=>{const file=e.target.files?.[0];if(file)setPhoto(file)};$('removePhoto').onclick=()=>{setPhoto(null);$('photoInput').value=''};
 $('q').oninput=()=>{$('clear').classList.toggle('hidden',!$('q').value);render()};$('clear').onclick=()=>{$('q').value='';$('clear').classList.add('hidden');render();$('q').focus()};$('clearRecent').onclick=()=>{write('pdRecent',[]);renderAllLists()};document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>screens(b.dataset.screen));document.querySelectorAll('[data-go-home]').forEach(b=>b.onclick=resetHome);document.querySelector('.brand').onclick=e=>{e.preventDefault();resetHome()};$('close').onclick=close;$('shade').onclick=close;
 bindGroup('ratios',v=>ratio=v);bindGroup('variants',v=>variants=v);bindGroup('looks',v=>look=v);document.querySelectorAll('#extra button').forEach(b=>b.onclick=()=>{const on=b.classList.toggle('on');b.setAttribute('aria-pressed',String(on));build()});['face','text','real','strict'].forEach(id=>{let stored;try{stored=localStorage.getItem('pd_'+id)}catch{}if(stored!==null&&stored!==undefined)$(id).checked=stored==='1';$(id).onchange=()=>{try{localStorage.setItem('pd_'+id,$(id).checked?'1':'0')}catch{toast('Не удалось сохранить настройку')}build()}});$('note').oninput=build;$('star').onclick=()=>{if(cur){toggleFav(cur.command);renderAllLists();render()}};
-async function copyPrompt(){try{await navigator.clipboard.writeText($('prompt').value);toast()}catch{const focus=document.activeElement;$('prompt').focus();$('prompt').select();let ok=false;try{ok=document.execCommand('copy')}catch{}if(focus?.isConnected)focus.focus({preventScroll:true});toast(ok?'Промт скопирован':'Выделите и скопируйте промт вручную',3500)}}$('copy').onclick=copyPrompt;
+async function copyPrompt(notify=true){
+ let copied=false;
+ try{await navigator.clipboard.writeText($('prompt').value);copied=true}catch{
+  const focus=document.activeElement,expanded=$('promptDetails').open;
+  $('promptDetails').open=true;$('prompt').focus();$('prompt').select();
+  try{copied=document.execCommand('copy')}catch{}
+  if(copied){$('promptDetails').open=expanded;if(focus?.isConnected)focus.focus({preventScroll:true})}
+ }
+ if(notify||!copied)toast(copied?'Промт скопирован':'Не удалось скопировать. Выделите текст промта и скопируйте вручную.',4500);
+ return copied;
+}
+$('copy').onclick=()=>copyPrompt();
+$('openChatGPT').onclick=async()=>{
+ if(!cur)return;
+ const button=$('openChatGPT');button.disabled=true;
+ try{if(await copyPrompt(false))window.location.assign('https://chatgpt.com/')}finally{button.disabled=false}
+};
+
 $('share').onclick=async()=>{const text=$('prompt').value;try{if(photoFile&&navigator.share&&navigator.canShare?.({files:[photoFile]})){await navigator.share({text,files:[photoFile]});return}if(navigator.share){await navigator.share({text});if(photoFile)toast('Промт отправлен. Фото добавьте в сервис вручную.',4000);return}await copyPrompt()}catch(e){if(e?.name!=='AbortError')toast('Не удалось поделиться. Скопируйте промт.',3500)}};
 document.addEventListener('keydown',e=>{if($('sheet').classList.contains('open')){if(e.key==='Escape'){e.preventDefault();close()}if(e.key==='Tab'){const focusable=[...$('sheet').querySelectorAll('button,textarea,summary')].filter(el=>!el.disabled&&el.getClientRects().length);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}return}if(e.key==='/'&&!e.metaKey&&!e.ctrlKey&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();screens('home');$('q').focus()}});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;$('install').classList.remove('hidden')});$('install').onclick=async()=>{if(!installEvent)return;await installEvent.prompt();await installEvent.userChoice;installEvent=null;$('install').classList.add('hidden')};
