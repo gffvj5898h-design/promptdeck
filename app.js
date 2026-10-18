@@ -44,7 +44,7 @@ function renderAllLists(){const f=fav().map(cmd=>C.find(c=>c.command===cmd)),r=r
 function toggleFav(cmd){let f=fav();f=f.includes(cmd)?f.filter(x=>x!==cmd):[cmd,...f];write('pdFav',f)}
 function addRecent(cmd){write('pdRecent',[cmd,...recent().filter(x=>x!==cmd)].slice(0,20));renderAllLists()}
 function selectGroup(id,value){$(id).querySelectorAll('button').forEach(b=>{const on=b.dataset.v===value;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))})}
-function openCmd(cmd){cur=C.find(c=>c.command===cmd||(c.aliases||[]).includes(cmd));if(!cur)return;lastFocus=document.activeElement;ratio='';variants='4';look='';$('note').value='';selectGroup('ratios','');selectGroup('variants','4');selectGroup('looks','');document.querySelectorAll('#extra button').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false')});$('sheetCat').textContent=groupFor(cur).title+' / '+sectionFor(cur).label;$('sheetCmd').textContent=cur.sourceCommand||cur.command;$('sheetTitle').textContent=cur.ui.title;$('rule').textContent=cur.rule.split(/(?<=[.!?])\s+/)[0];$('parameters').open=false;$('promptDetails').open=false;$('variantsBox').classList.toggle('hidden',!varCmd.has(cur.command));build();$('shade').classList.remove('hidden');$('sheet').inert=false;$('sheet').classList.add('open');$('sheet').scrollTop=0;$('app').inert=true;document.body.style.overflow='hidden';addRecent(cur.command);$('close').focus({preventScroll:true})}
+function openCmd(cmd){cur=C.find(c=>c.command===cmd||(c.aliases||[]).includes(cmd));if(!cur)return;lastFocus=document.activeElement;ratio='';variants='4';look='';$('note').value='';selectGroup('ratios','');selectGroup('variants','4');selectGroup('looks','');document.querySelectorAll('#extra button').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false')});$('sheetCat').textContent=groupFor(cur).title+' / '+sectionFor(cur).label;$('sheetCmd').textContent=cur.sourceCommand||cur.command;$('sheetTitle').textContent=cur.ui.title;$('rule').textContent=cur.rule.split(/(?<=[.!?])\s+/)[0];$('parameters').open=false;$('promptDetails').open=false;$('nativeRetry').classList.add('hidden');$('variantsBox').classList.toggle('hidden',!varCmd.has(cur.command));build();$('shade').classList.remove('hidden');$('sheet').inert=false;$('sheet').classList.add('open');$('sheet').scrollTop=0;$('app').inert=true;document.body.style.overflow='hidden';addRecent(cur.command);$('close').focus({preventScroll:true})}
 function close(){$('sheet').classList.remove('open');$('sheet').inert=true;$('shade').classList.add('hidden');$('app').inert=false;document.body.style.overflow='';if(lastFocus&&lastFocus.isConnected)lastFocus.focus({preventScroll:true})}
 function sourceInstruction(){return 'Если приложено изображение, используй его как основу. Если изображения нет, создай новое по описанию.'}
 function categoryGuard(){if(cur.category==='product_scene'||cur.category==='product_info')return 'Сохраняй узнаваемые пропорции и видимые признаки исходного объекта, кроме изменений, необходимых для выбранного приёма. Если это товар, сохраняй его форму, упаковку и логотипы, когда задача не требует их стилизации. Не придумывай характеристики, состав, размеры, материалы или свойства. Для скрытого устройства нужны исходные данные; без них допустима только художественная интерпретация.';return 'Сохраняй идентичность человека, пропорции, возрастные признаки и узнаваемые черты, кроме изменений, прямо требуемых задачей. Не превращай человека в другого человека.'}
@@ -68,10 +68,23 @@ async function copyPrompt(notify=true){
  return copied;
 }
 $('copy').onclick=()=>copyPrompt();
+const isAppleMobile=/iPhone|iPad|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+if(isAppleMobile){
+ $('openChatGPT').innerHTML=icon('arrow')+' Открыть приложение ChatGPT';
+ $('chatGPTHint').textContent='Промт скопируется. После перехода вставьте его в ChatGPT. Фото добавьте отдельно.';
+ $('chatGPTWeb').classList.remove('hidden');
+}
 $('openChatGPT').onclick=async()=>{
  if(!cur)return;
  const button=$('openChatGPT');button.disabled=true;
- try{if(await copyPrompt(false))window.location.assign('https://chatgpt.com/')}finally{button.disabled=false}
+ try{
+  if(await copyPrompt(false)){
+   if(isAppleMobile){
+    $('nativeRetry').classList.remove('hidden');
+    window.location.assign('chatgpt://');
+   }else window.location.assign('https://chatgpt.com/');
+  }
+ }finally{button.disabled=false}
 };
 
 $('share').onclick=async()=>{const text=$('prompt').value;try{if(photoFile&&navigator.share&&navigator.canShare?.({files:[photoFile]})){await navigator.share({text,files:[photoFile]});return}if(navigator.share){await navigator.share({text});if(photoFile)toast('Промт отправлен. Фото добавьте в сервис вручную.',4000);return}await copyPrompt()}catch(e){if(e?.name!=='AbortError')toast('Не удалось поделиться. Скопируйте промт.',3500)}};

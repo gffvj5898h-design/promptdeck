@@ -5,3 +5,5 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
 
 .chatGPTButton{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:47px;border:0;border-radius:9px;background:#485d39;color:#fff;font-size:14px;font-weight:550;margin-bottom:10px}.chatGPTButton .iconSvg{width:18px;height:18px}.chatGPTButton:disabled{opacity:.6;cursor:wait}.actions .primary{background:#fff;border-color:#d8e2ca;color:#90a17c}
+
+.nativeRetry,.webFallback{display:block;text-align:center;font-size:11px;line-height:1.5;padding:9px;color:#79916a;text-decoration:underline;text-underline-offset:3px}.nativeRetry{margin-top:5px}

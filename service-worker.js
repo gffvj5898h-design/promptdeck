@@ -1,6 +1,6 @@
-const VERSION='042';
+const VERSION='043';
 const CACHE='promptdeck-v'+VERSION;
-const ASSETS=['./','./?v=042','index.html','styles.css?v=042','app.js?v=042','manifest.webmanifest','data/taxonomy.js?v=042','data/product_scene.js?v=042','data/product_info.js?v=042','data/portrait.js?v=042','data/people_photo.js?v=042','icons/icon-192.png','icons/icon-512.png'];
+const ASSETS=['./','./?v=043','index.html','styles.css?v=043','app.js?v=043','manifest.webmanifest','data/taxonomy.js?v=043','data/product_scene.js?v=043','data/product_info.js?v=043','data/portrait.js?v=043','data/people_photo.js?v=043','icons/icon-192.png','icons/icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{
  const keys=await caches.keys();
