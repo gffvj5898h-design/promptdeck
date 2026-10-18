@@ -41,6 +41,15 @@ async function copyPrompt(){try{await navigator.clipboard.writeText($('prompt').
 $('share').onclick=async()=>{const text=$('prompt').value;try{if(photoFile&&navigator.share&&navigator.canShare?.({files:[photoFile]})){await navigator.share({text,files:[photoFile]});return}if(navigator.share){await navigator.share({text});if(photoFile)toast('Промт отправлен. Фото добавьте в сервис вручную.',4000);return}await copyPrompt()}catch(e){if(e?.name!=='AbortError')toast('Не удалось поделиться. Скопируйте промт.',3500)}};
 document.addEventListener('keydown',e=>{if($('sheet').classList.contains('open')){if(e.key==='Escape'){e.preventDefault();close()}if(e.key==='Tab'){const focusable=[...$('sheet').querySelectorAll('button,textarea,summary')].filter(el=>!el.disabled&&el.getClientRects().length);const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}return}if(e.key==='/'&&!e.metaKey&&!e.ctrlKey&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();screens('home');$('q').focus()}});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;$('install').classList.remove('hidden')});$('install').onclick=async()=>{if(!installEvent)return;await installEvent.prompt();await installEvent.userChoice;installEvent=null;$('install').classList.add('hidden')};
-if('serviceWorker'in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing&&navigator.serviceWorker.controller){refreshing=true;toast('PromptDeck обновлён')}});navigator.serviceWorker.register('service-worker.js').then(r=>r.update()).catch(()=>{})}
+if('serviceWorker'in navigator){
+ const hadController=Boolean(navigator.serviceWorker.controller);let refreshing=false;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadController&&!refreshing){refreshing=true;location.reload()}});
+ navigator.serviceWorker.register('service-worker.js',{updateViaCache:'none'}).then(registration=>{
+  const update=()=>registration.update().catch(()=>{});update();
+  window.addEventListener('pageshow',update);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')update()});
+ }).catch(()=>{});
+}
+
 $('totalCount').textContent=C.length;renderQuick();renderCats();render();renderAllLists();
 })();
